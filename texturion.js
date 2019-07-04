@@ -72,7 +72,21 @@ var texturion={}
 window.onload= function(){
     texturion.canvas=document.getElementById("canvas");
     texturion.gl= texturion.canvas.getContext("webgl");
+    let gl=texturion.gl;
+    /* make texture rendering program */
     if( texturion.renderTextureShaderProgram ) gl.deleteProgram( texturion.renderTextureShaderProgram );
     texturion.renderTextureShaderProgram=  makeShaderProgramTool(texturion.gl, renderTextureVS , renderTextureFS );
+    /* load buffer data */
+    if( !texturion.hBufferId ) {
+	texturion.hBufferId= gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, texturion.hBufferId );
+
+	let hIn=[];
+	for(var i=0; i< texSize+4; i++) {
+	    hIn.push(i-2);
+	}
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( hIn ) , gl.STATIC_DRAW );
+    }
+
     console.log(texturion);
 }
