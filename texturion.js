@@ -42,8 +42,6 @@ var renderTextureVS=""+
     "float A(float x,float y){ return  1.0; }\n"+
     "attribute float h;\n"+
     "uniform float v;\n"+
-    "const float depth=1.0;\n"+
-    "uniform mat3 xyz;\n"+
     "varying vec4 color;\n"+
     "void main()\n"+
     "{\n"+
@@ -70,12 +68,13 @@ var renderTextureFS=""+
 var texturion={}
 
 window.onload= function(){
-    texturion.canvas=document.getElementById("canvas");
-    texturion.gl= texturion.canvas.getContext("webgl");
+    if(!texturion.canvas){
+	texturion.canvas=document.getElementById("canvas");
+    }
+    if(! texturion.gl) {
+	texturion.gl= texturion.canvas.getContext("webgl");
+    }
     let gl=texturion.gl;
-    /* make texture rendering program */
-    if( texturion.renderTextureShaderProgram ) gl.deleteProgram( texturion.renderTextureShaderProgram );
-    texturion.renderTextureShaderProgram=  makeShaderProgramTool(texturion.gl, renderTextureVS , renderTextureFS );
     /* load buffer data */
     if( !texturion.hBufferId ) {
 	texturion.hBufferId= gl.createBuffer();
@@ -88,5 +87,56 @@ window.onload= function(){
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( hIn ) , gl.STATIC_DRAW );
     }
 
+
+    if(!texturion.textureId) {
+	/* create texture object and allocate image memories */
+	texturion.textureId=gl.createTexture();
+	// gl.activeTexture(gl.TEXTURE0+sbx_textureUnit);
+	gl.bindTexture(gl.TEXTURE_2D, texturion.textureId);
+	gl.texImage2D(gl.TEXTURE_2D , 0, gl.RGBA, texSize, texSize, 0 /* border */,
+		      gl.RGBA, gl.UNSIGNED_BYTE, null);   
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    }
+    
+    if(!texturion.frameBufferId) {
+	/* create framebuffer object */
+	texturion.frameBufferId=gl.createFramebuffer();
+    }
+
+    /* make texture rendering program */
+    if( texturion.renderTextureShaderProgram ){
+	gl.deleteProgram( texturion.renderTextureShaderProgram );
+    }
+    texturion.renderTextureShaderProgram=  makeShaderProgramTool(texturion.gl, renderTextureVS , renderTextureFS );
+    texturion.hLocation=gl.getAttribLocation(texturion.renderTextureShaderProgram, "h");
+    texturion.vLocation=gl.getUniformLocation(texturion.renderTextureShaderProgram, "v");
+
+    /* render texture */
+    gl.useProgram(texturion.renderTextureShaderProgram);
+    gl.bindTexture(gl.TEXTURE_2D, texturion.textureId);
+    
+    let defaultFBO = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, texturion.frameBufferId);
+    gl.viewport(0,0,texSize,texSize);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texturion.textureId, 0);
+
+    gl.enableVertexAttribArray(texturion.hLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, texturion.hBufferId);
+    for( j=0; j<texSize+4; j++) {
+	gl.uniform1f(texturion.vLocation, j-2);
+	gl.vertexAttribPointer( texturion.hLocation, 1, gl.FLOAT, false, 0, 0);
+	gl.drawArrays(gl.POINTS, 0, texSize+4);
+    }
+    
+    gl.generateMipmap(gl.TEXTURE_2D);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, defaultFBO); // return to default screen FBO
+
+
+    /// TODO: draw texture
+    
     console.log(texturion);
 }
