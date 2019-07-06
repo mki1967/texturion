@@ -8,6 +8,7 @@ var makeShaderProgramTool= function(gl, vertexShaderSource, fragmentShaderSource
     gl.compileShader(vertexShader);
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
 	console.log(gl.getShaderInfoLog(vertexShader));
+	console.log(vertexShaderSource);
 	return null;
     }
 
@@ -16,6 +17,7 @@ var makeShaderProgramTool= function(gl, vertexShaderSource, fragmentShaderSource
     gl.compileShader(fragmentShader);
     if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
 	console.log(gl.getShaderInfoLog(fragmentShader));
+	console.log(fragmentShaderSource);
 	return null;
     }
 
@@ -63,6 +65,44 @@ var renderTextureFS=""+
     "{\n"+
     "  gl_FragColor= color;\n"+
     "}\n";
+
+
+var drawTextureVS=""+
+    "attribute vec3 posAttr;\n"+
+    "attribute vec2 texAttr;\n"+
+    "varying vec2 texCoords;\n"+
+    "void main()\n"+
+    "{\n"+
+    "    gl_Position = vec4(posAttr.xyz, 1.0);\n"+
+    "    texCoords = texAttr;\n"+
+    "}\n";
+
+var drawTextureFS=""+
+    "precision mediump float;\n"+
+    "varying vec2 texCoords;\n"+
+    "uniform sampler2D texSampler;\n"+
+    "void main()\n"+
+    "{\n"+
+    "    gl_FragColor = texture2D(texSampler, texCoords);\n"+
+    "}\n";
+
+var posAttrFloat32Array= new Float32Array( [
+    -1,  -1,  0,
+    -1,  +1,  0,
+    +1,  +1,  0,
+    +1,  +1,  0,
+    +1,  -1,  0,
+    -1,  -1,  0 
+] );
+
+var texAttrFloat32Array= new Float32Array( [
+     0,  0,
+     0,  2,
+     2,  2,
+     2,  2,
+     2,  0,
+     0,  0 
+] );
 
 
 var texturion={}
@@ -135,6 +175,20 @@ window.onload= function(){
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, defaultFBO); // return to default screen FBO
 
+
+   if( !texturion.drawTextureShaderProgram ){
+	texturion.drawTextureShaderProgram=  makeShaderProgramTool(texturion.gl, drawTextureVS , drawTextureFS );
+	texturion.posAttr=gl.getAttribLocation(texturion.drawTextureShaderProgram, "posAttr");
+	texturion.texAttr=gl.getAttribLocation(texturion.drawTextureShaderProgram, "texAttr");
+	texturion.texSampler=gl.getUniformLocation(texturion.drawTextureShaderProgram, "texSampler");
+	// create and load data buffers
+	texturion.posAttrBufferId= gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, texturion.posAttrBufferId );
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( posAttrFloat32Array ) , gl.STATIC_DRAW );
+	texturion.texAttrBufferId= gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, texturion.texAttrBufferId );
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( texAttrFloat32Array ) , gl.STATIC_DRAW );
+    }
 
     /// TODO: draw texture
     
