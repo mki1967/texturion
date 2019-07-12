@@ -38,7 +38,7 @@ const texSize= 256;
 var renderTextureVS=""+
     "const float PI = " + Math.PI +";\n"+
     "const int texSize= "+texSize+";\n"+
-    "float R(float x,float y){ return  0.5; }\n"+
+    "float R(float x,float y){ return  abs(x); }\n"+
     "float G(float x,float y){ return  0.5; }\n"+
     "float B(float x,float y){ return  0.5; }\n"+
     "float A(float x,float y){ return  1.0; }\n"+
@@ -191,6 +191,22 @@ window.onload= function(){
     }
 
     /// TODO: draw texture
+    gl.useProgram(texturion.drawTextureShaderProgram);
+    gl.enableVertexAttribArray(texturion.posAttr);
+    gl.enableVertexAttribArray(texturion.texAttr);
     
+    gl.bindBuffer(gl.ARRAY_BUFFER, texturion.posAttrBufferId );
+    gl.vertexAttribPointer( texturion.posAttr, 3, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, texturion.texAttrBufferId );
+    gl.vertexAttribPointer( texturion.texAttr, 2, gl.FLOAT, false, 0, 0);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texturion.textureId );
+    gl.uniform1i(texturion.texSampler, 0 );
+
+    gl.clearColor( 0,0,0,1 );
+    gl.clear(gl.COLOR_BUFFER_BIT );
+    gl.drawArrays(gl.TRIANGLES, 0, 6 );
     console.log(texturion);
 }
