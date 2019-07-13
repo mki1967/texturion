@@ -35,12 +35,13 @@ var makeShaderProgramTool= function(gl, vertexShaderSource, fragmentShaderSource
 
 
 const texSize= 256;
+const canvasSize=2*texSize;
 var renderTextureVS=""+
     "const float PI = " + Math.PI +";\n"+
     "const int texSize= "+texSize+";\n"+
     "float R(float x,float y){ return  abs(x); }\n"+
-    "float G(float x,float y){ return  0.5; }\n"+
-    "float B(float x,float y){ return  0.5; }\n"+
+    "float G(float x,float y){ return  abs(y); }\n"+
+    "float B(float x,float y){ return  0.0; }\n"+
     "float A(float x,float y){ return  1.0; }\n"+
     "attribute float h;\n"+
     "uniform float v;\n"+
@@ -174,7 +175,8 @@ window.onload= function(){
     gl.generateMipmap(gl.TEXTURE_2D);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, defaultFBO); // return to default screen FBO
-
+    gl.viewport(0,0,canvasSize,canvasSize);
+ 
 
    if( !texturion.drawTextureShaderProgram ){
 	texturion.drawTextureShaderProgram=  makeShaderProgramTool(texturion.gl, drawTextureVS , drawTextureFS );
