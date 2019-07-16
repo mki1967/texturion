@@ -36,28 +36,29 @@ var makeShaderProgramTool= function(gl, vertexShaderSource, fragmentShaderSource
 
 const texSize= 256;
 const canvasSize=2*texSize;
-var renderTextureVS=""+
-    "const float PI = " + Math.PI +";\n"+
-    "const int texSize= "+texSize+";\n"+
-    "float R(float x,float y){ return  abs(x); }\n"+
-    "float G(float x,float y){ return  abs(y); }\n"+
-    "float B(float x,float y){ return  0.0; }\n"+
-    "float A(float x,float y){ return  1.0; }\n"+
-    "attribute float h;\n"+
-    "uniform float v;\n"+
-    "varying vec4 color;\n"+
-    "void main()\n"+
-    "{\n"+
-    "  float  args[6];\n"+
-    "  float h=h-float(texSize)/2.0;\n"+
-    "  float v=v-float(texSize)/2.0;\n"+
-    "  float x= h/float(texSize); \n"+
-    "  float y= v/float(texSize); \n"+
-    "  color= vec4( R(x,y), G(x,y), B(x,y), A(x,y) );\n"+
-    "  gl_Position = vec4( x, y, 0.0, 0.5 );\n"+ /// w=0.5 for perspective division
-    "  gl_PointSize=1.0;\n"+ /// test it
-    "}\n";
-
+var renderTextureVS= function(){
+    return ""+
+	"const float PI = " + Math.PI +";\n"+
+	"const int texSize= "+texSize+";\n"+
+	"float R(float x,float y){ return  abs(x); }\n"+
+	"float G(float x,float y){ return  abs(y); }\n"+
+	"float B(float x,float y){ return  0.0; }\n"+
+	"float A(float x,float y){ return  1.0; }\n"+
+	"attribute float h;\n"+
+	"uniform float v;\n"+
+	"varying vec4 color;\n"+
+	"void main()\n"+
+	"{\n"+
+	"  float  args[6];\n"+
+	"  float h=h-float(texSize)/2.0;\n"+
+	"  float v=v-float(texSize)/2.0;\n"+
+	"  float x= h/float(texSize); \n"+
+	"  float y= v/float(texSize); \n"+
+	"  color= vec4( R(x,y), G(x,y), B(x,y), A(x,y) );\n"+
+	"  gl_Position = vec4( x, y, 0.0, 0.5 );\n"+ /// w=0.5 for perspective division
+	"  gl_PointSize=1.0;\n"+ /// test it
+	"}\n";
+}
 
 var renderTextureFS=""+
     "precision mediump float;\n"+
@@ -97,12 +98,12 @@ var posAttrFloat32Array= new Float32Array( [
 ] );
 
 var texAttrFloat32Array= new Float32Array( [
-     0,  0,
-     0,  2,
-     2,  2,
-     2,  2,
-     2,  0,
-     0,  0 
+    0,  0,
+    0,  2,
+    2,  2,
+    2,  2,
+    2,  0,
+    0,  0 
 ] );
 
 
@@ -151,7 +152,7 @@ window.onload= function(){
     if( texturion.renderTextureShaderProgram ){
 	gl.deleteProgram( texturion.renderTextureShaderProgram );
     }
-    texturion.renderTextureShaderProgram=  makeShaderProgramTool(texturion.gl, renderTextureVS , renderTextureFS );
+    texturion.renderTextureShaderProgram=  makeShaderProgramTool(texturion.gl, renderTextureVS() , renderTextureFS );
     texturion.hLocation=gl.getAttribLocation(texturion.renderTextureShaderProgram, "h");
     texturion.vLocation=gl.getUniformLocation(texturion.renderTextureShaderProgram, "v");
 
@@ -176,9 +177,9 @@ window.onload= function(){
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, defaultFBO); // return to default screen FBO
     gl.viewport(0,0,canvasSize,canvasSize);
- 
+    
 
-   if( !texturion.drawTextureShaderProgram ){
+    if( !texturion.drawTextureShaderProgram ){
 	texturion.drawTextureShaderProgram=  makeShaderProgramTool(texturion.gl, drawTextureVS , drawTextureFS );
 	texturion.posAttr=gl.getAttribLocation(texturion.drawTextureShaderProgram, "posAttr");
 	texturion.texAttr=gl.getAttribLocation(texturion.drawTextureShaderProgram, "texAttr");
