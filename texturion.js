@@ -33,17 +33,25 @@ var makeShaderProgramTool= function(gl, vertexShaderSource, fragmentShaderSource
     return shaderProgram;
 };
 
+var def={};
+def.R="0.5*(1.0+sin(2.0*PI*y))";
+def.G="0.5*(1.0+cos(2.0*PI*x))";
+def.B="0.0";
+def.A="1.0";
+
 
 const texSize= 256;
 const canvasSize=2*texSize;
-var renderTextureVS= function(){
+
+// def contains fields def.R, def.G, def.B, def.A with strings defining R,G,B,A dependencies on x,y coordinates
+var renderTextureVS= function(def){
     return ""+
 	"const float PI = " + Math.PI +";\n"+
 	"const int texSize= "+texSize+";\n"+
-	"float R(float x,float y){ return  abs(x); }\n"+
-	"float G(float x,float y){ return  abs(y); }\n"+
-	"float B(float x,float y){ return  0.0; }\n"+
-	"float A(float x,float y){ return  1.0; }\n"+
+	"float R(float x,float y){ return  "+def.R+"; }\n"+
+	"float G(float x,float y){ return  "+def.G+"; }\n"+
+	"float B(float x,float y){ return  "+def.B+"; }\n"+
+	"float A(float x,float y){ return  "+def.A+"; }\n"+
 	"attribute float h;\n"+
 	"uniform float v;\n"+
 	"varying vec4 color;\n"+
@@ -152,7 +160,7 @@ window.onload= function(){
     if( texturion.renderTextureShaderProgram ){
 	gl.deleteProgram( texturion.renderTextureShaderProgram );
     }
-    texturion.renderTextureShaderProgram=  makeShaderProgramTool(texturion.gl, renderTextureVS() , renderTextureFS );
+    texturion.renderTextureShaderProgram=  makeShaderProgramTool(texturion.gl, renderTextureVS(def) , renderTextureFS );
     texturion.hLocation=gl.getAttribLocation(texturion.renderTextureShaderProgram, "h");
     texturion.vLocation=gl.getUniformLocation(texturion.renderTextureShaderProgram, "v");
 
