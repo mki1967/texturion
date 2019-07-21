@@ -36,7 +36,7 @@ var makeShaderProgramTool= function(gl, vertexShaderSource, fragmentShaderSource
 var def={};
 def.R="0.5*(1.0+sin(2.0*PI*y))";
 def.G="0.5*(1.0+cos(2.0*PI*x))";
-def.B="0.0";
+def.B="G(x,y)";
 def.A="1.0";
 
 
@@ -115,9 +115,25 @@ var texAttrFloat32Array= new Float32Array( [
 ] );
 
 
+
+var setRGBATextAreas= function( def ){
+    document.getElementById("defR").value=def.R;
+    document.getElementById("defG").value=def.G;
+    document.getElementById("defB").value=def.B;
+    document.getElementById("defA").value=def.A;
+}
+
+var geRGBATextAreas= function( def ){
+    def.R=document.getElementById("defR").value;
+    def.G=document.getElementById("defG").value;
+    def.B=document.getElementById("defB").value;
+    def.A=document.getElementById("defA").value;
+}
+
 var texturion={}
 
-window.onload= function(){
+
+var   applyDefs= function( def){
     if(!texturion.canvas){
 	texturion.canvas=document.getElementById("canvas");
     }
@@ -220,4 +236,16 @@ window.onload= function(){
     gl.clear(gl.COLOR_BUFFER_BIT );
     gl.drawArrays(gl.TRIANGLES, 0, 6 );
     console.log(texturion);
+}
+
+var RGBAbuttonCallback=function(){
+    geRGBATextAreas(def);
+    applyDefs(def);
+}
+
+window.onload= function(){
+    setRGBATextAreas(def);
+    geRGBATextAreas(def);
+    applyDefs(def);
+    document.getElementById("RGBAbutton").onclick=RGBAbuttonCallback;
 }
