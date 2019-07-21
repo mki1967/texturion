@@ -48,6 +48,9 @@ var renderTextureVS= function(def){
     return ""+
 	"const float PI = " + Math.PI +";\n"+
 	"const int texSize= "+texSize+";\n"+
+	"float G(float x,float y);\n"+
+	"float B(float x,float y);\n"+
+	"float A(float x,float y);\n"+
 	"float R(float x,float y){ return  "+def.R+"; }\n"+
 	"float G(float x,float y){ return  "+def.G+"; }\n"+
 	"float B(float x,float y){ return  "+def.B+"; }\n"+
