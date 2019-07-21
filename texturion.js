@@ -60,10 +60,10 @@ var renderTextureVS= function(def){
 	"  float  args[6];\n"+
 	"  float h=h-float(texSize)/2.0;\n"+
 	"  float v=v-float(texSize)/2.0;\n"+
-	"  float x= h/float(texSize); \n"+
-	"  float y= v/float(texSize); \n"+
+	"  float x= 2.0*h/float(texSize); \n"+
+	"  float y= 2.0*v/float(texSize); \n"+
 	"  color= vec4( R(x,y), G(x,y), B(x,y), A(x,y) );\n"+
-	"  gl_Position = vec4( x, y, 0.0, 0.5 );\n"+ /// w=0.5 for perspective division
+	"  gl_Position = vec4( x, y, 0.0, 1.0 );\n"+ /// w=0.5 for perspective division
 	"  gl_PointSize=1.0;\n"+ /// test it
 	"}\n";
 }
