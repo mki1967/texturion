@@ -34,6 +34,7 @@ var makeShaderProgramTool= function(gl, vertexShaderSource, fragmentShaderSource
 };
 
 var def={};
+def.label="myTexture";
 def.R="0.5*(1.0+sin(2.0*PI*y))";
 def.G="0.5*(1.0+cos(2.0*PI*x))";
 def.B="G(x,y)";
@@ -120,17 +121,27 @@ var texAttrFloat32Array= new Float32Array( [
 
 
 var setRGBATextAreas= function( def ){
+    document.getElementById("label").value=def.label;
     document.getElementById("defR").value=def.R;
     document.getElementById("defG").value=def.G;
     document.getElementById("defB").value=def.B;
     document.getElementById("defA").value=def.A;
 }
 
-var geRGBATextAreas= function( def ){
+var getRGBATextAreas= function( def ){
+    def.label=document.getElementById("label").value;
     def.R=document.getElementById("defR").value;
     def.G=document.getElementById("defG").value;
     def.B=document.getElementById("defB").value;
     def.A=document.getElementById("defA").value;
+}
+
+var setJSONTextArea= function( def ){
+    document.getElementById("json").value=JSON.stringify(def);
+}
+
+var getJSONTextArea= function(  ){
+    return JSON.parse( document.getElementById("json").value );
 }
 
 var texturion={}
@@ -239,16 +250,46 @@ var   applyDefs= function( def){
     gl.clear(gl.COLOR_BUFFER_BIT );
     gl.drawArrays(gl.TRIANGLES, 0, 6 );
     console.log(texturion);
+    setRGBATextAreas(def);
+    setJSONTextArea(def);
 }
 
 var RGBAbuttonCallback=function(){
-    geRGBATextAreas(def);
+    getRGBATextAreas(def);
+    applyDefs(def);
+}
+
+var JSONCopyButtonCallback=function(){
+    document.getElementById("json").select();
+    document.execCommand("Copy");
+}
+
+var JSONPasteButtonCallback=function(){
+    navigator.clipboard.readText().then(
+	clipText => document.getElementById("json").value = clipText);
+    console.log("Paste?");
+}
+
+var JSONApplyButtonCallback=function(){
+    let defOld=def;
+    try{
+	def=getJSONTextArea();
+    }
+    catch(err){
+	alert(err);
+	def=defOld;
+	// setRGBATextAreas(def);
+	return;
+    }
     applyDefs(def);
 }
 
 window.onload= function(){
     setRGBATextAreas(def);
-    geRGBATextAreas(def);
+    getRGBATextAreas(def);
     applyDefs(def);
     document.getElementById("RGBAbutton").onclick=RGBAbuttonCallback;
+    document.getElementById("JSONCopyButton").onclick=JSONCopyButtonCallback;
+    document.getElementById("JSONPasteButton").onclick=JSONPasteButtonCallback;
+    document.getElementById("JSONApplyButton").onclick=JSONApplyButtonCallback;
 }
