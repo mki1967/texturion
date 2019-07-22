@@ -270,6 +270,18 @@ var JSONPasteButtonCallback=function(){
     console.log("Paste?");
 }
 
+
+var JSONSaveButtonCallback=function(){
+    let file = new Blob([document.getElementById("json").value], {type:'text/plain'});
+    let a = document.createElement('A');
+    a.download = def.label+'.texturion';  ///...
+    a.href=URL.createObjectURL(file);
+    // window.open(href, 'Download' );
+    a.click();
+
+}
+
+
 var JSONApplyButtonCallback=function(){
     let defOld=def;
     try{
@@ -292,4 +304,5 @@ window.onload= function(){
     document.getElementById("JSONCopyButton").onclick=JSONCopyButtonCallback;
     document.getElementById("JSONPasteButton").onclick=JSONPasteButtonCallback;
     document.getElementById("JSONApplyButton").onclick=JSONApplyButtonCallback;
+    document.getElementById("JSONSaveButton").onclick=JSONSaveButtonCallback;
 }
