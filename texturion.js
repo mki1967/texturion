@@ -282,6 +282,34 @@ var JSONSaveButtonCallback=function(){
 }
 
 
+/* found on: https://stackoverflow.com/questions/16215771/how-open-select-file-dialog-via-js */
+var JSONLoadButtonCallback=function(){
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept='texturion';
+
+    input.onchange = e => {
+
+	// getting a hold of the file reference
+	var file = e.target.files[0];
+
+	// setting up the reader
+	var reader = new FileReader();
+	reader.readAsText(file,'UTF-8');
+
+	// here we tell the reader what to do when it's done reading...
+	reader.onload = readerEvent => {
+	    var content = readerEvent.target.result; // this is the content!
+	    document.getElementById("json").value= content;  /// ONLY THIS UPDATED !!!
+	    /// console.log(content); ///
+	    JSONApplyButtonCallback();
+	}
+
+    }
+
+    input.click();
+}
+
 var JSONApplyButtonCallback=function(){
     let defOld=def;
     try{
@@ -305,4 +333,5 @@ window.onload= function(){
     document.getElementById("JSONPasteButton").onclick=JSONPasteButtonCallback;
     document.getElementById("JSONApplyButton").onclick=JSONApplyButtonCallback;
     document.getElementById("JSONSaveButton").onclick=JSONSaveButtonCallback;
+    document.getElementById("JSONLoadButton").onclick=JSONLoadButtonCallback;
 }
