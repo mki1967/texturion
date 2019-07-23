@@ -286,7 +286,7 @@ var JSONSaveButtonCallback=function(){
 var JSONLoadButtonCallback=function(){
     var input = document.createElement('input');
     input.type = 'file';
-    input.accept='texturion';
+    input.accept='.texturion';
 
     input.onchange = e => {
 
