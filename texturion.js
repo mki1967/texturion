@@ -9,8 +9,13 @@ var makeShaderProgramTool= function(gl, vertexShaderSource, fragmentShaderSource
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
 	console.log(gl.getShaderInfoLog(vertexShader));
 	console.log(vertexShaderSource);
+	document.getElementById("errText").value=gl.getShaderInfoLog(vertexShader)+"\n---- TEXT OF THE PROGRAM ----\n\n"+vertexShaderSource;
+	document.getElementById("errDiv").style.display = 'block';
 	return null;
     }
+    // if we are here, then there was no error :-)
+    document.getElementById("errText").value='';
+    document.getElementById("errDiv").style.display = 'none';
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     gl.shaderSource(fragmentShader, fragmentShaderSource);
@@ -191,6 +196,7 @@ var   applyDefs= function( def){
 	gl.deleteProgram( texturion.renderTextureShaderProgram );
     }
     texturion.renderTextureShaderProgram=  makeShaderProgramTool(texturion.gl, renderTextureVS(def) , renderTextureFS );
+    if( texturion.renderTextureShaderProgram === null ) return; /// error in the program
     texturion.hLocation=gl.getAttribLocation(texturion.renderTextureShaderProgram, "h");
     texturion.vLocation=gl.getUniformLocation(texturion.renderTextureShaderProgram, "v");
 

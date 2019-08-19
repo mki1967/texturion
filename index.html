@@ -7,12 +7,17 @@
     </script>
   </head>
   <body>
-
     <h2>2x2 textures view </h2>
 
     <div>
       <canvas id="canvas" width="512" height="512">
       </canvas>
+    </div>
+    <div id="errDiv" style="display: none;">
+      <h2> ERROR: </h2>
+      <textarea id="errText" rows="20" cols="60">
+      </textarea>
+      <button id="errHide" onclick="document.getElementById('errDiv').style.display = 'none';"> Hide error message </button>
     </div>
 
     <h2>RGBA definitions </h2>
