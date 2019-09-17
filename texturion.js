@@ -51,6 +51,16 @@ const canvasSize=2*texSize;
 
 // def contains fields def.R, def.G, def.B, def.A with strings defining R,G,B,A dependencies on x,y coordinates
 var renderTextureVS= function(def){
+    let test= def.R.concat( def.G ).concat( def.B ).concat( def.A );
+    if( test.includes(";") || test.includes("}") ) {
+       console.log("mki3d_texture.renderTextureVS WARNING of ';' or '}':");
+	console.log(def);
+	if( !confirm("The definition contains character ';' or '}'. Do you really want it to be applied?") ){
+	    def.label=def.label.concat("!!! BAD !!!");
+	    def.R=def.G=def.B="0.0";
+	    def.A="1.0";
+	}
+    }
     return ""+
 	"const float PI = " + Math.PI +";\n"+
 	"const int texSize= "+texSize+";\n"+
@@ -255,7 +265,7 @@ var   applyDefs= function( def){
     gl.clearColor( 0,0,0,1 );
     gl.clear(gl.COLOR_BUFFER_BIT );
     gl.drawArrays(gl.TRIANGLES, 0, 6 );
-    console.log(texturion);
+    // console.log(texturion);
     setRGBATextAreas(def);
     setJSONTextArea(def);
 }
@@ -273,7 +283,7 @@ var JSONCopyButtonCallback=function(){
 var JSONPasteButtonCallback=function(){
     navigator.clipboard.readText().then(
 	clipText => document.getElementById("json").value = clipText);
-    console.log("Paste?");
+    // console.log("Paste?");
 }
 
 
