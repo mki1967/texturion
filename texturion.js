@@ -53,7 +53,7 @@ const canvasSize=2*texSize;
 var renderTextureVS= function(def){
     let test= def.R.concat( def.G ).concat( def.B ).concat( def.A );
     if( test.includes(";") || test.includes("}") ) {
-       console.log("mki3d_texture.renderTextureVS WARNING of ';' or '}':");
+	console.log("mki3d_texture.renderTextureVS WARNING of ';' or '}':");
 	console.log(def);
 	if( !confirm("The definition contains character ';' or '}'. Do you really want it to be applied?") ){
 	    def.label=def.label.concat("!!! BAD !!!");
@@ -340,6 +340,9 @@ var JSONApplyButtonCallback=function(){
     applyDefs(def);
 }
 
+
+
+
 window.onload= function(){
     setRGBATextAreas(def);
     getRGBATextAreas(def);
@@ -350,4 +353,27 @@ window.onload= function(){
     document.getElementById("JSONApplyButton").onclick=JSONApplyButtonCallback;
     document.getElementById("JSONSaveButton").onclick=JSONSaveButtonCallback;
     document.getElementById("JSONLoadButton").onclick=JSONLoadButtonCallback;
+
+    // load from URL of `input` parameter
+    let params = (new URL(document.location)).searchParams;
+    let input=params.get("input")
+    if(input) {
+	URLLoad(input);
+    }
+
+}
+
+URLLoad = async function( url ) { // load from url
+    let defOld=def;
+    try{
+	console.log("LOADING FROM "+url+" ..."); ///
+	let response=await fetch(url, {cache: 'no-cache', mode: 'cors'} );
+	// console.log( response );
+	let data= await response.text();
+	// console.log(data); /// tests
+	document.getElementById("json").value= data;  /// ONLY THIS UPDATED !!!
+	JSONApplyButtonCallback();
+    } catch( err )  {
+	console.log(err);
+    }
 }
